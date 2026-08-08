@@ -78,6 +78,12 @@ but it will no longer claim those resources as safe to replace.
 For Docker, build with `docker build -t delta-crew .` and mount a persistent
 directory at `/app/data` when running the container.
 
+Run the dependency-free blueprint checks with:
+
+```bash
+python -m unittest discover -s tests -v
+```
+
 ## Permission summary
 
 | Area | Audience | Chat behavior |
@@ -90,4 +96,3 @@ directory at `/app/data` when running the container.
 | Alumni | Graduate/Alumni | Alumni chat chattable; graduation board read-only |
 | Every area | PROPEL leadership | View, post, moderate, and manage |
 | Every area | Department Management/HR | View/read access |
-
