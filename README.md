@@ -77,7 +77,32 @@ but it will no longer claim those resources as safe to replace.
 
 ### Render Web Service
 
-Create a Render **Web Service** with `python bot.py` as the start command.
+This repository includes a `Dockerfile`. If the Render settings page shows
+**Dockerfile Path** and **Docker Command** (rather than Build Command and Start
+Command), the service is using the **Docker** runtime. Use these settings:
+
+| Docker service setting | Value |
+| --- | --- |
+| **Root Directory** | Leave blank |
+| **Dockerfile Path** | `./Dockerfile` |
+| **Docker Build Context Directory** | `.` |
+| **Docker Command** | Leave blank (recommended) |
+| **Pre-Deploy Command** | Leave blank |
+| **Health Check Path** | `/healthz` |
+
+Leaving **Docker Command** blank makes Render use the Dockerfile's existing
+`CMD ["python", "bot.py"]`. If Render requires an override, enter
+`python bot.py` as the Docker Command. There is no separate build command for a
+Docker service because Render builds the Dockerfile automatically.
+
+If the service instead uses Render's **Python** runtime, use
+`pip install -r requirements.txt` as the **Build Command** and `python bot.py`
+as the **Start Command**.
+
+For either runtime, set `DISCORD_TOKEN` in Render's **Environment** settings,
+and optionally set `DISCORD_GUILD_ID` while testing. Never paste the token into
+a command. Do not use the public service URL as a Docker or start command.
+
 Render injects `PORT`; the bot listens on `0.0.0.0:$PORT` and serves JSON health
 responses at `/` and `/healthz`. You may set `/healthz` as Render's health check
 path. When `PORT` is not set, such as during local development, the health server
