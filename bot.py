@@ -18,6 +18,19 @@ logging.basicConfig(
 LOGGER = logging.getLogger("delta_crew")
 
 
+def _discord_startup_error(exc: BaseException) -> str:
+    """Return a useful message without dumping an upstream HTML error page."""
+    details = str(exc)
+    if "cf-error-details" in details or "error-footer" in details:
+        return (
+            "Discord returned a Cloudflare error page while the bot was starting. "
+            "This response came from Discord's network, not from this bot. Wait a "
+            "few minutes and restart the service; if it continues, check Discord's "
+            "status page and the hosting provider's outbound connectivity."
+        )
+    return f"Discord rejected the startup request: {details}"
+
+
 class DeltaCrewBot(commands.Bot):
     def __init__(self) -> None:
         intents = discord.Intents.default()
@@ -47,9 +60,11 @@ def main() -> None:
     if not token:
         raise SystemExit("DISCORD_TOKEN is required.")
     start_health_server()
-    DeltaCrewBot().run(token, log_handler=None)
+    try:
+        DeltaCrewBot().run(token, log_handler=None)
+    except discord.HTTPException as exc:
+        raise SystemExit(_discord_startup_error(exc)) from None
 
 
 if __name__ == "__main__":
     main()
-
