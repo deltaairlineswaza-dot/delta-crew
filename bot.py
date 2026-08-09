@@ -8,6 +8,7 @@ import os
 import discord
 from discord.ext import commands
 
+from health_server import start_health_server
 from training_setup import TrainingCommands
 
 logging.basicConfig(
@@ -45,6 +46,7 @@ def main() -> None:
     token = os.getenv("DISCORD_TOKEN")
     if not token:
         raise SystemExit("DISCORD_TOKEN is required.")
+    start_health_server()
     DeltaCrewBot().run(token, log_handler=None)
 
 

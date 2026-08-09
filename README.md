@@ -75,6 +75,24 @@ but it will no longer claim those resources as safe to replace.
    python bot.py
    ```
 
+### Render Web Service
+
+Create a Render **Web Service** with `python bot.py` as the start command.
+Render injects `PORT`; the bot listens on `0.0.0.0:$PORT` and serves JSON health
+responses at `/` and `/healthz`. You may set `/healthz` as Render's health check
+path. When `PORT` is not set, such as during local development, the health server
+does not start.
+
+Render may print a PyNaCl warning. It is harmless for this bot: the training
+blueprint creates voice channels, but the bot does not join voice or process
+audio.
+
+Render Free Web Services sleep after 15 minutes without inbound HTTP traffic,
+so use a paid/non-sleeping instance for a reliably always-online Discord bot.
+Render's filesystem is also ephemeral; use durable storage for
+`data/training_setup_state.json` (or set `TRAINING_SETUP_STATE_FILE` to a durable
+path).
+
 For Docker, build with `docker build -t delta-crew .` and mount a persistent
 directory at `/app/data` when running the container.
 
