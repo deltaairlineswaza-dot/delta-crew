@@ -9,7 +9,8 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
-BLUEPRINT_VERSION = "2026.08.08.1"
+BLUEPRINT_VERSION = "2026.08.10.2"
+SERVER_NAME = "PROPEL Academy"
 
 
 @dataclass(frozen=True, slots=True)
@@ -59,9 +60,12 @@ def _role_group(
     colour: int | None = None,
 ) -> tuple[RoleSpec, ...]:
     group_colour = colour if colour is not None else COLOURS[group]
+    # Discord displays roles from highest to lowest. Roles are created in this
+    # order, so putting the divider last leaves it underneath the functional
+    # roles in its group instead of above them.
     return (
-        RoleSpec(heading, group_colour, group, decorative=True),
         *(RoleSpec(name, group_colour, group) for name in names),
+        RoleSpec(heading, group_colour, group, decorative=True),
     )
 
 
@@ -70,6 +74,7 @@ ROLE_SPECS: tuple[RoleSpec, ...] = (
         "🎓 ┃ PROPEL LEADERSHIP",
         "leadership",
         (
+            "Delta Leadership",
             "PROPEL | Director",
             "PROPEL | Deputy Director",
             "PROPEL | Training Management",
@@ -189,6 +194,7 @@ ROLE_SPECS: tuple[RoleSpec, ...] = (
 
 
 LEADERSHIP_ROLE_NAMES = (
+    "Delta Leadership",
     "PROPEL | Director",
     "PROPEL | Deputy Director",
     "PROPEL | Training Management",
@@ -426,4 +432,3 @@ def all_channel_specs() -> tuple[tuple[CategorySpec, ChannelSpec], ...]:
 
 def channel_key(category: CategorySpec, channel: ChannelSpec) -> str:
     return f"{category.key}::{channel.name}"
-

@@ -21,6 +21,7 @@ from training_blueprint import (
     CATEGORY_SPECS,
     LEADERSHIP_ROLE_NAMES,
     ROLE_SPECS,
+    SERVER_NAME,
     CategorySpec,
     ChannelSpec,
     all_channel_specs,
@@ -309,7 +310,11 @@ class TrainingSetupService:
 
     def preview_embed(self, report: PreviewReport, *, confirmation: bool) -> discord.Embed:
         colour = discord.Colour.orange() if confirmation else discord.Colour.blurple()
-        title = "Are you sure?" if confirmation else "PROPEL training setup preview"
+        title = (
+            "Are you sure?"
+            if confirmation
+            else f"{SERVER_NAME} setup preview"
+        )
         embed = discord.Embed(
             title=title,
             description=(
@@ -723,7 +728,7 @@ class TrainingSetupService:
         )
         staff = [roles[name] for name in category_spec.staff_role_names]
 
-        if channel_spec.policy in {"chat", "discussion", "staff_log"}:
+        if channel_spec.policy in {"chat", "staff_log"}:
             for role in audience:
                 self._set_overwrite(
                     overwrites,
@@ -731,6 +736,18 @@ class TrainingSetupService:
                     send_messages=True,
                     send_messages_in_threads=True,
                     create_public_threads=True,
+                )
+        elif channel_spec.policy == "discussion":
+            for role in audience:
+                self._set_overwrite(
+                    overwrites,
+                    role,
+                    # A forum post is a thread. Trainees may reply inside an
+                    # existing post, but only staff may create new posts.
+                    send_messages=False,
+                    send_messages_in_threads=True,
+                    create_public_threads=False,
+                    create_private_threads=False,
                 )
         elif channel_spec.policy in {
             "read_only",
@@ -925,7 +942,7 @@ class TrainingSetupConfirmView(discord.ui.View):
             return
 
         embed = discord.Embed(
-            title="PROPEL training setup applied",
+            title=f"{SERVER_NAME} setup applied",
             description=(
                 "The managed blueprint is installed. Re-running the same version will reconcile it without creating duplicates."
             ),
