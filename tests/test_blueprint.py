@@ -5,6 +5,7 @@ from training_blueprint import (
     CATEGORY_SPECS,
     LEADERSHIP_ROLE_NAMES,
     ROLE_SPECS,
+    SERVER_NAME,
     all_channel_specs,
 )
 
@@ -15,6 +16,18 @@ class BlueprintTests(unittest.TestCase):
         self.assertEqual(len(names), len(set(names)))
         self.assertTrue(all(role.colour > 0 for role in ROLE_SPECS))
         self.assertTrue(set(LEADERSHIP_ROLE_NAMES).issubset(ACTUAL_ROLE_NAMES))
+
+    def test_server_name_and_leadership_role(self) -> None:
+        self.assertEqual(SERVER_NAME, "PROPEL Academy")
+        self.assertIn("Delta Leadership", LEADERSHIP_ROLE_NAMES)
+
+    def test_each_role_divider_is_below_its_roles(self) -> None:
+        groups = {role.group for role in ROLE_SPECS}
+        for group in groups:
+            with self.subTest(group=group):
+                specs = [role for role in ROLE_SPECS if role.group == group]
+                self.assertTrue(specs[-1].decorative)
+                self.assertTrue(all(not role.decorative for role in specs[:-1]))
 
     def test_category_and_local_channel_names_are_unique(self) -> None:
         category_names = [category.name for category in CATEGORY_SPECS]
@@ -56,11 +69,10 @@ class BlueprintTests(unittest.TestCase):
                 self.assertTrue(information.name.endswith("-information"))
 
     def test_expected_blueprint_size(self) -> None:
-        self.assertEqual(len(ROLE_SPECS), 64)
+        self.assertEqual(len(ROLE_SPECS), 65)
         self.assertEqual(len(CATEGORY_SPECS), 9)
         self.assertEqual(len(all_channel_specs()), 49)
 
 
 if __name__ == "__main__":
     unittest.main()
-

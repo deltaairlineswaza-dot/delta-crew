@@ -21,6 +21,7 @@ from training_blueprint import (
     CATEGORY_SPECS,
     LEADERSHIP_ROLE_NAMES,
     ROLE_SPECS,
+    SERVER_NAME,
     CategorySpec,
     ChannelSpec,
     all_channel_specs,
@@ -309,7 +310,11 @@ class TrainingSetupService:
 
     def preview_embed(self, report: PreviewReport, *, confirmation: bool) -> discord.Embed:
         colour = discord.Colour.orange() if confirmation else discord.Colour.blurple()
-        title = "Are you sure?" if confirmation else "PROPEL training setup preview"
+        title = (
+            "Are you sure?"
+            if confirmation
+            else f"{SERVER_NAME} setup preview"
+        )
         embed = discord.Embed(
             title=title,
             description=(
@@ -937,7 +942,7 @@ class TrainingSetupConfirmView(discord.ui.View):
             return
 
         embed = discord.Embed(
-            title="PROPEL training setup applied",
+            title=f"{SERVER_NAME} setup applied",
             description=(
                 "The managed blueprint is installed. Re-running the same version will reconcile it without creating duplicates."
             ),

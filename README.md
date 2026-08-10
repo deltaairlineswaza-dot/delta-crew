@@ -1,12 +1,15 @@
-# Delta Crew — PROPEL training setup
+# Delta Crew — PROPEL Academy setup
 
 This Discord bot provides `/training setup` with a read-only preview and an
-explicit **Are you sure?** confirmation before applying the PROPEL training
+explicit **Are you sure?** confirmation before applying the **PROPEL Academy**
 server blueprint.
 
 ## What it creates
 
-- 53 functional, colour-coded roles plus 11 colour-coded divider roles.
+- 54 functional, colour-coded roles plus 11 colour-coded divider roles. Each
+  divider is placed underneath the functional roles in its group.
+- A `Delta Leadership` role with full access to every managed category and
+  channel, alongside the PROPEL leadership roles.
 - 9 private categories and 49 channels.
 - Flight Deck, Cabin Crew, Ground Crew, and Customer Service section channels
   are Discord Forum channels (the Discord UI may call these Discussion
