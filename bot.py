@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import logging
 import os
+import time
 
 import discord
 from discord.ext import commands
@@ -24,11 +25,16 @@ def _discord_startup_error(exc: BaseException) -> str:
     if "cf-error-details" in details or "error-footer" in details:
         return (
             "Discord returned a Cloudflare error page while the bot was starting. "
-            "This response came from Discord's network, not from this bot. Wait a "
-            "few minutes and restart the service; if it continues, check Discord's "
-            "status page and the hosting provider's outbound connectivity."
+            "This response came from Discord's network, not from this bot. The bot "
+            "will retry automatically; if it continues, check Discord's status "
+            "page and the hosting provider's outbound connectivity."
         )
     return f"Discord rejected the startup request: {details}"
+
+
+def _is_cloudflare_error(exc: BaseException) -> bool:
+    details = str(exc)
+    return "cf-error-details" in details or "error-footer" in details
 
 
 class DeltaCrewBot(commands.Bot):
@@ -55,15 +61,29 @@ class DeltaCrewBot(commands.Bot):
             LOGGER.info("Logged in as %s (%s)", self.user, self.user.id)
 
 
+def _run_bot(token: str) -> None:
+    """Run the bot, backing off when Discord's edge returns transient HTML."""
+    retry_delay = 5
+    while True:
+        try:
+            DeltaCrewBot().run(token, log_handler=None)
+            return
+        except discord.HTTPException as exc:
+            message = _discord_startup_error(exc)
+            if not _is_cloudflare_error(exc):
+                raise SystemExit(message) from None
+            LOGGER.error(message)
+            LOGGER.info("Retrying the Discord connection in %s seconds.", retry_delay)
+            time.sleep(retry_delay)
+            retry_delay = min(retry_delay * 2, 300)
+
+
 def main() -> None:
     token = os.getenv("DISCORD_TOKEN")
     if not token:
         raise SystemExit("DISCORD_TOKEN is required.")
     start_health_server()
-    try:
-        DeltaCrewBot().run(token, log_handler=None)
-    except discord.HTTPException as exc:
-        raise SystemExit(_discord_startup_error(exc)) from None
+    _run_bot(token)
 
 
 if __name__ == "__main__":
