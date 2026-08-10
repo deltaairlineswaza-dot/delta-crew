@@ -723,7 +723,7 @@ class TrainingSetupService:
         )
         staff = [roles[name] for name in category_spec.staff_role_names]
 
-        if channel_spec.policy in {"chat", "discussion", "staff_log"}:
+        if channel_spec.policy in {"chat", "staff_log"}:
             for role in audience:
                 self._set_overwrite(
                     overwrites,
@@ -731,6 +731,18 @@ class TrainingSetupService:
                     send_messages=True,
                     send_messages_in_threads=True,
                     create_public_threads=True,
+                )
+        elif channel_spec.policy == "discussion":
+            for role in audience:
+                self._set_overwrite(
+                    overwrites,
+                    role,
+                    # A forum post is a thread. Trainees may reply inside an
+                    # existing post, but only staff may create new posts.
+                    send_messages=False,
+                    send_messages_in_threads=True,
+                    create_public_threads=False,
+                    create_private_threads=False,
                 )
         elif channel_spec.policy in {
             "read_only",

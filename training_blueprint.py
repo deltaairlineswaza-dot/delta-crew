@@ -9,7 +9,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
-BLUEPRINT_VERSION = "2026.08.08.1"
+BLUEPRINT_VERSION = "2026.08.10.1"
 
 
 @dataclass(frozen=True, slots=True)
